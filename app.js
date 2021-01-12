@@ -4,8 +4,9 @@ const mongoose = require('mongoose');
 const app = express();
 
 //ROUTEs
-app.get('/',(req,res) => {
-    res.send('we are on home');
-});
+const authRoute = require('./Routes/authentication');
+
+//Route Middlewares
+app.use('/api/user', authRoute);
 
 app.listen(3000);
