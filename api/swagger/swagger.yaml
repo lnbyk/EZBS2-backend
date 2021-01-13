@@ -1,0 +1,83 @@
+swagger: "2.0"
+info:
+  title: API documentation
+  description: API description in Markdown.
+  version: 1.0.0
+host: localhost:3000
+basePath: /api
+schemes:
+  - http
+paths:
+  /auth/login:
+    post:
+      parameters:
+        - in: body
+          name: user
+          schema:
+            $ref: '#/definitions/User'
+      description: User Login api
+      responses:
+        200:
+          description: OK
+          schema:
+            properties:
+               success:
+                type: boolean
+                example: true
+               data:
+                type: object 
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      email:
+                        type: string
+                        example: join@test.com
+                  access_token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwiZW1haWwiOiJsbmJ5a0AxMzEyMzEuZWR1IiwicGFzc3dvcmQiOiIkMmIkMTAkOWRYZXRPVEFBQ1N1bkZibDJQcU9GLjFaaE0ubUdGSmJVNUdINzdvSHcuUkNHZEk4QWtIYmEiLCJpYXQiOjE2MTA1NTQzNjB9.67ePPDyIdRCb6mOWngLbcIduzPqSEq_GEjVdQ5BstYE
+  /auth/register:
+   post:
+      description: Creates a new user.
+      parameters:
+        - in: body
+          name: user
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        200:
+          description: OK
+          schema:
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: object 
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      email:
+                        type: string
+                        example: join@test.com
+        400:
+          description: User already Existes
+        500:
+          description: Database Error occur
+
+                    
+                      
+                    
+
+definitions:
+  User:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    # Both properties are required
+    required:  
+      - email
+      - password
