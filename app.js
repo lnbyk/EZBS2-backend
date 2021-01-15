@@ -41,6 +41,9 @@ app.use("/api", apiRoutes);
 app.get("/api", function (req, res) {
   res.sendFile(__dirname + "/express/api.html");
 });
+app.get("/style", function (req, res) {
+  res.sendFile(__dirname + "/express/style.css");
+});
 
 app.get("/", (req, res) => {
   res.send("we are on home");
