@@ -39,7 +39,6 @@ exports.register = function (req, res, next) {
     */
 
   // use joi to check req validation
-  console.log(1)
   const schema = Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string().min(6).max(20).required(),
@@ -50,7 +49,7 @@ exports.register = function (req, res, next) {
   const result = schema.validate(req.body);
   if (result.error) {
     res.status(400).send({
-      success: false,
+      ok: false,
       message: "Register body not valid",
       error: result.error.details[0].message,
     });
@@ -75,7 +74,7 @@ exports.register = function (req, res, next) {
       (err, results) => {
         if (err) {
           res.status(500).send({
-            success: false,
+            ok: false,
             message: "Database query error occurs",
             error: err,
           });
@@ -83,7 +82,7 @@ exports.register = function (req, res, next) {
           // if user exist return error
           if (results.length > 0) {
             res.status(400).send({
-              success: false,
+              ok: false,
               error: "email is registered",
             });
           } else {
@@ -94,13 +93,13 @@ exports.register = function (req, res, next) {
               (err, results, fields) => {
                 if (err) {
                   res.status(500).send({
-                    success: false,
+                    ok: false,
                     message: "Error occur when insert user into table",
                     error: err,
                   });
                 } else {
                   res.status(200).send({
-                    success: true,
+                    ok: true,
                     message: "user registered sucessfully !",
                     data: {
                       user: users,
@@ -129,7 +128,7 @@ exports.login = function (req, res, next) {
   const result = schema.validate(req.body);
   if (result.error) {
     res.status(400).send({
-      success: false,
+      ok: false,
       message: "Login body not valid",
       error: result.error.details[0].message,
     });
@@ -141,7 +140,7 @@ exports.login = function (req, res, next) {
   mysqlDb.query(query, [email], (err, results, fields) => {
     if (err) {
       res.status(500).send({
-        success: false,
+        ok: false,
         message: "Database query error occurs",
         error: err,
       });
@@ -156,8 +155,8 @@ exports.login = function (req, res, next) {
         };
         if (compare) {
           res.status(200).send({
-            success: true,
-            message: "Login successfully",
+            ok: true,
+            message: "Login okfully",
             data: {
               access_token: generateToken(user),
               user: {
@@ -167,13 +166,13 @@ exports.login = function (req, res, next) {
           });
         } else {
           res.status(400).send({
-            success: false,
+            ok: false,
             error: "Email or password incorrect",
           });
         }
       } else {
         res.status(400).send({
-          success: false,
+          ok: false,
           error: "Email does not exist",
         });
       }

@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
 dotenv.config();
+const paypal = require("paypal-rest-sdk");
 
 const dbService = require("./dbService");
 const passportService = require("./security/passport");
@@ -13,7 +14,7 @@ const passportService = require("./security/passport");
 app.use(passportService.passport.initialize());
 
 app.use(express.json());
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({ extended: false }));
 
 // static files
 
@@ -63,6 +64,7 @@ app.listen(port, () => {
 
 // serving static files
 app.use(express.static("images"));
+app.use(express.static("express"));
 
 /*******************************************/
 // Initializing route group
@@ -70,11 +72,12 @@ app.use(express.static("images"));
 const apiRoutes = express.Router();
 const authenticationRouter = require("./routes/authentication");
 const initializeTableRoutes = require("./routes/initializeTables");
-
+const paymentRoutes = require("./routes/payment");
 
 // all authorization routes are in authRoutes
 apiRoutes.use("/auth", authenticationRouter);
-apiRoutes.use("/",initializeTableRoutes);
+apiRoutes.use("/", paymentRoutes);
+apiRoutes.use("/", initializeTableRoutes);
 // all api routes are in apiRoutes
 app.use("/api", apiRoutes);
 
@@ -82,6 +85,27 @@ app.use("/api", apiRoutes);
 // render html page for routes
 app.get("/api", function (req, res) {
   res.sendFile(__dirname + "/express/api.html");
+});
+
+app.get("/cancel", function (req, res) {
+  res.sendFile(__dirname + "/express/paypalcancel.html");
+});
+
+app.get("/process", function (req, res) {
+  var paymentId = req.query.paymentId;
+  var payerId = { payer_id: req.query.PayerID };
+
+  paypal.payment.execute(paymentId, payerId, function (error, payment) {
+    if (error) {
+      console.error(error);
+    } else {
+      if (payment.state == "approved") {
+        res.send("payment completed successfully");
+      } else {
+        res.send("payment not successful");
+      }
+    }
+  });
 });
 
 app.get("/", (req, res) => {
